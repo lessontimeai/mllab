@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Website</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
+    <script type="text/javascript">
+        function speak(text) {
+            var msg = new SpeechSynthesisUtterance();
+            msg.text = text;
+            msg.lang = 'en-US';
+            window.speechSynthesis.speak(msg);
+        }
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            var socket = io.connect('http://' + document.domain + ':' + location.port);
+            var chatWindow = document.getElementById('chat-window');
+            var chatBody = document.querySelector('.chat-body');
+            var chatInput = document.querySelector('.chat-input');
+            var chatButton = document.querySelector('.chat-send-button');
+
+            socket.on('connect', function() {
+                console.log('Connected to server');
+            });
+
+            socket.on('response', function(data) {
+                var messageElement = document.createElement('div');
+                messageElement.textContent = data.data;
+                speak(data.data);
+                chatBody.appendChild(messageElement);
+                chatBody.scrollTop = chatBody.scrollHeight;
+            });
+
+            chatButton.addEventListener('click', function() {
+                var message = chatInput.value;
+                if (message) {
+                    var messageElement = document.createElement('div');
+                    messageElement.textContent = 'You: ' + message;
+                    chatBody.appendChild(messageElement);
+                    chatBody.scrollTop = chatBody.scrollHeight;
+                    socket.emit('message', {data: message});
+                    chatInput.value = '';
+                }
+            });
+        });
+
+        function toggleChat() {
+            var chatWindow = document.getElementById('chat-window');
+            if (chatWindow.style.display === 'none' || chatWindow.style.display === '') {
+                chatWindow.style.display = 'flex';
+            } else {
+                chatWindow.style.display = 'none';
+            }
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Welcome to Our Business</h1>
+        </div>
+    </header>
+    <div class="container">
+        <div class="content">
+            <h2>About Us</h2>
+            <p>Welcome to our business website. We offer a variety of services to cater to your needs.</p>
+            <!-- Add more content as needed -->
+        </div>
+    </div>
+    <footer>
+        <p>&copy; 2024 Business Name</p>
+    </footer>
+    <button class="chat-button" onclick="toggleChat()">💬</button>
+    <div class="chat-window" id="chat-window">
+        <div class="chat-header">Chat with Us</div>
+        <div class="chat-body">
+            <p>Welcome! How can we help you?</p>
+        </div>
+        <div class="chat-footer">
+            <input type="text" class="chat-input" placeholder="Type a message...">
+            <button class="chat-send-button">Send</button>
+        </div>
+    </div>
+</body>
+</html>
