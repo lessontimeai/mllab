@@ -7,7 +7,7 @@ from typing import Any
 from openai import AssistantEventHandler
 
 # Replace with your Assistant ID
-ASSISTANT_ID = "asst_lnG9QLjvkcWeqCFgVbxrAD8g"
+ASSISTANT_ID = "asst_htthEjysDRgHkGuo2VwSYKbS"
 
 # Set up OpenAI API key
 openai.api_key = os.getenv("OPENAI_API_KEY")
